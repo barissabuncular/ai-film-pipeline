@@ -1,0 +1,45 @@
+{
+  "1": {
+    "class_type": "LoadVideo",
+    "inputs": { "file": "clip.mp4" }
+  },
+  "2": {
+    "class_type": "GetVideoComponents",
+    "inputs": { "video": ["1", 0] }
+  },
+  "3": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": { "model_name": "4x_NMKD-Siax_200k.pth" }
+  },
+  "4": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": { "upscale_model": ["3", 0], "image": ["2", 0] }
+  },
+  "5": {
+    "class_type": "ImageScale",
+    "inputs": { "image": ["4", 0], "upscale_method": "lanczos", "width": 1920, "height": 1080, "crop": "center" }
+  },
+  "6": {
+    "class_type": "RIFE VFI",
+    "inputs": {
+      "ckpt_name": "rife49.pth",
+      "frames": ["5", 0],
+      "clear_cache_after_n_frames": 10,
+      "multiplier": 2,
+      "fast_mode": true,
+      "ensemble": true,
+      "scale_factor": 1.0,
+      "dtype": "float16",
+      "torch_compile": false,
+      "batch_size": 1
+    }
+  },
+  "7": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["6", 0], "fps": 32.0 }
+  },
+  "8": {
+    "class_type": "SaveVideo",
+    "inputs": { "video": ["7", 0], "filename_prefix": "GameStories/post/clip_1080p", "format": "mp4", "codec": "h264" }
+  }
+}

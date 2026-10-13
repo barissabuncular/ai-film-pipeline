@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.venv-*/
+*.egg-info/
+
+# Models and weights
+models/
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.bin
+
+# Generated outputs and working data
+output/
+outputs/
+shots/
+concepts/
+review/
+logs/
+sound/
+train/output/
+train/datasets/
+train/cache/
+train/models/
+train/licences/
+train/pilot/*/
+!train/pilot/butcher/
+train/pilot/butcher/*
+!train/pilot/butcher/make_w1.py
+story/
+workflows/reference/
+
+# Media
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.png
+*.webp
+*.gif
+# curated, size-checked showcase images are the only media in the repo
+*.jpg
+!docs/images/*.jpg
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

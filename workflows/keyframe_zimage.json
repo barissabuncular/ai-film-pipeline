@@ -1,0 +1,56 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": { "unet_name": "z_image_turbo_int8_convrot.safetensors", "weight_dtype": "default" }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": { "clip_name": "qwen_3_4b_fp8_mixed.safetensors", "type": "lumina2", "device": "default" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "z_image_ae.safetensors" }
+  },
+  "4": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": { "model": ["1", 0], "shift": 3.0 }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "cinematic film still, a lone armored knight standing in a ruined cathedral at dawn, volumetric light through broken stained glass, dust in the air, anamorphic lens, shallow depth of field, photoreal, 35mm, muted teal and amber grade"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["2", 0], "text": "" }
+  },
+  "7": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": { "width": 1280, "height": 720, "batch_size": 1 }
+  },
+  "8": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["4", 0],
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "latent_image": ["7", 0],
+      "seed": 1,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "9": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["8", 0], "vae": ["3", 0] }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["9", 0], "filename_prefix": "GameStories/keyframes/kf" }
+  }
+}

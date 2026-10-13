@@ -1,0 +1,113 @@
+{
+  "1": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": { "unet_name": "Wan2.2-I2V-A14B-HighNoise-Q4_K_M.gguf" }
+  },
+  "2": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": { "unet_name": "Wan2.2-I2V-A14B-LowNoise-Q4_K_M.gguf" }
+  },
+  "3": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": { "model": ["1", 0], "lora_name": "wan2.2_i2v_lightning_4step_high.safetensors", "strength_model": 1.0 }
+  },
+  "4": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": { "model": ["2", 0], "lora_name": "wan2.2_i2v_lightning_4step_low.safetensors", "strength_model": 1.0 }
+  },
+  "5": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": { "model": ["3", 0], "shift": 5.0 }
+  },
+  "6": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": { "model": ["4", 0], "shift": 5.0 }
+  },
+  "7": {
+    "class_type": "CLIPLoader",
+    "inputs": { "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors", "type": "wan", "device": "default" }
+  },
+  "8": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "wan2.1_vae.safetensors" }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["7", 0],
+      "text": "slow cinematic push-in, the knight turns his head toward the light, dust drifting, subtle camera movement, film grain, realistic motion"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["7", 0],
+      "text": "blurry, low quality, distorted face, extra limbs, jitter, flicker, text, watermark, static image, fast motion"
+    }
+  },
+  "11": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "keyframe.png" }
+  },
+  "12": {
+    "class_type": "WanImageToVideo",
+    "inputs": {
+      "positive": ["9", 0],
+      "negative": ["10", 0],
+      "vae": ["8", 0],
+      "width": 832,
+      "height": 480,
+      "length": 81,
+      "batch_size": 1,
+      "start_image": ["11", 0]
+    }
+  },
+  "13": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": ["5", 0],
+      "add_noise": "enable",
+      "noise_seed": 1,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": ["12", 0],
+      "negative": ["12", 1],
+      "latent_image": ["12", 2],
+      "start_at_step": 0,
+      "end_at_step": 2,
+      "return_with_leftover_noise": "enable"
+    }
+  },
+  "14": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": ["6", 0],
+      "add_noise": "disable",
+      "noise_seed": 1,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": ["12", 0],
+      "negative": ["12", 1],
+      "latent_image": ["13", 0],
+      "start_at_step": 2,
+      "end_at_step": 4,
+      "return_with_leftover_noise": "disable"
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["14", 0], "vae": ["8", 0] }
+  },
+  "16": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["15", 0], "fps": 16.0 }
+  },
+  "17": {
+    "class_type": "SaveVideo",
+    "inputs": { "video": ["16", 0], "filename_prefix": "GameStories/clips/clip", "format": "mp4", "codec": "h264" }
+  }
+}

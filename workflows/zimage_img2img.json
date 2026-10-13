@@ -1,0 +1,13 @@
+{
+  "1": { "class_type": "UNETLoader", "inputs": { "unet_name": "z_image_turbo_int8_convrot.safetensors", "weight_dtype": "default" } },
+  "2": { "class_type": "CLIPLoader", "inputs": { "clip_name": "qwen_3_4b_fp8_mixed.safetensors", "type": "lumina2", "device": "default" } },
+  "3": { "class_type": "VAELoader", "inputs": { "vae_name": "z_image_ae.safetensors" } },
+  "4": { "class_type": "ModelSamplingAuraFlow", "inputs": { "model": ["1", 0], "shift": 3.0 } },
+  "5": { "class_type": "CLIPTextEncode", "inputs": { "clip": ["2", 0], "text": "" } },
+  "6": { "class_type": "CLIPTextEncode", "inputs": { "clip": ["2", 0], "text": "" } },
+  "7": { "class_type": "LoadImage", "inputs": { "image": "INPUT.png" } },
+  "8": { "class_type": "VAEEncode", "inputs": { "pixels": ["7", 0], "vae": ["3", 0] } },
+  "9": { "class_type": "KSampler", "inputs": { "model": ["4", 0], "positive": ["5", 0], "negative": ["6", 0], "latent_image": ["8", 0], "seed": 1, "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 0.25 } },
+  "10": { "class_type": "VAEDecode", "inputs": { "samples": ["9", 0], "vae": ["3", 0] } },
+  "11": { "class_type": "SaveImage", "inputs": { "images": ["10", 0], "filename_prefix": "GameStories/harmonise/h" } }
+}
